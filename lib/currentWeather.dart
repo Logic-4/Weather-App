@@ -21,8 +21,8 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
       backgroundColor: Colors.blue,
       body: Center(
         child: FutureBuilder(
-          builder: (context, AsyncSnapshot snapshot) {
-            if (snapshot != null) {
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            if (snapshot.hasData) {
               Weather _weather = snapshot.data;
               if (_weather == null) {
                 return Text("Error getting weather");
@@ -30,7 +30,9 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
                 return weatherBox(_weather);
               }
             } else {
-              return CircularProgressIndicator();
+              return CircularProgressIndicator(
+                color: Colors.white,
+              );
             }
           },
           future: getCurrentWeather(),
@@ -75,7 +77,9 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
   }
 
   Future getCurrentWeather() async {
-    Weather weather;
+    Weather? weather = Weather(
+        temp: 10, feelsLike: 10, low: 10, high: 10, description: "Cloudy");
+    ;
     String city = "bangalore";
     String apiKey = "1d5592436c6d43c47b20c2e8d2bc40d3";
     var url = Uri.parse(
@@ -84,9 +88,6 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
     final responce = await http.get(url);
     if (responce.statusCode == 200) {
       weather = Weather.fromJson(jsonDecode(responce.body));
-    } else {
-      weather = Weather(
-          temp: 10, feelsLike: 10, low: 10, high: 10, description: "Cloudy");
     }
 
     return weather;
